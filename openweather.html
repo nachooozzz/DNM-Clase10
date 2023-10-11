@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>DNOO37 | BOOTSTRAP 5.3.2</title>
+        <!--El CSS de Bootstrap-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+        <!--Que luego puedo complementar-->
+        <style>
+            .active {
+                text-decoration: underline;
+            }
+        </style>
+    </head>
+    <body class="bg-body-tertiary">
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top" style="backdrop-filter: blur(10px)">
+            <div class="container">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="me-1 bi bi-thermometer-sun" viewBox="0 0 16 16">
+                <path d="M5 12.5a1.5 1.5 0 1 1-2-1.415V2.5a.5.5 0 0 1 1 0v8.585A1.5 1.5 0 0 1 5 12.5z"/>
+                <path d="M1 2.5a2.5 2.5 0 0 1 5 0v7.55a3.5 3.5 0 1 1-5 0V2.5zM3.5 1A1.5 1.5 0 0 0 2 2.5v7.987l-.167.15a2.5 2.5 0 1 0 3.333 0L5 10.486V2.5A1.5 1.5 0 0 0 3.5 1zm5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0v-1a.5.5 0 0 1 .5-.5zm4.243 1.757a.5.5 0 0 1 0 .707l-.707.708a.5.5 0 1 1-.708-.708l.708-.707a.5.5 0 0 1 .707 0zM8 5.5a.5.5 0 0 1 .5-.5 3 3 0 1 1 0 6 .5.5 0 0 1 0-1 2 2 0 0 0 0-4 .5.5 0 0 1-.5-.5zM12.5 8a.5.5 0 0 1 .5-.5h1a.5.5 0 1 1 0 1h-1a.5.5 0 0 1-.5-.5zm-1.172 2.828a.5.5 0 0 1 .708 0l.707.708a.5.5 0 0 1-.707.707l-.708-.707a.5.5 0 0 1 0-.708zM8.5 12a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0v-1a.5.5 0 0 1 .5-.5z"/>
+                </svg>
+                <a class="navbar-brand" href="index.html">IGNACIO ALARCÓN</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav ms-auto mb-2 mb-md-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html">INDEX</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="integrantes.html">INTEGRANTES</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="openweather.html">OPEN WEATHER</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="picture.html">PICTURE OF THE DAY</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="sismico.html">SÍSMICO</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <header class="container mt-5">
+            <div class="row">
+                <div class="col col-lg-5 pt-5">
+                    <div class="input-group">
+                        <input class="form-control" list="ciudades" name="ciudad" placeholder="Escriba el nombre de una ciudad chilena…" aria-describedby="button" />
+                        <datalist id="ciudades"></datalist>
+                        <button class="btn btn-dark" type="button" id="button" onclick="consulta()">Ver</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main class="container my-5">
+            <div class="row" style="min-height: 60vh;">
+                <div class="align-self-center">
+                    <blockquote class="d-none">La temperatura en <span id="lugar"></span> es de <span id="temperatura" class="fw-bolder"></span></blockquote>
+                </div>
+            </div>
+        </main>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+        <script>
+            const input = document.querySelector("input");
+            const navegador = document.querySelector("nav");
+            const llenado = document.querySelector("#ciudades");
+            const respuesta = document.querySelector("blockquote");
+            const lugar = document.querySelector("#lugar");
+            const temperatura = document.querySelector("#temperatura");
+            var listaCiudades = [];
+            //creando la función cities
+            async function cities() {
+                const primero = await fetch("https://raw.githubusercontent.com/profesorfaco/dno037-2023-2/main/clase-07/_ciudades.json");
+                const ciudades = await primero.json();
+                console.log(ciudades);
+                ciudades.forEach((c) => {
+                    llenado.innerHTML += `<option value="${c.name}">`;
+                    listaCiudades.push(c.name);
+                });
+            }
+            cities().catch((error) => console.error(error));
+            async function weather(ciudad) {
+                //¡Por favor, cambie la API Key que sigue!
+                const key = "0866d6c0c9446d71ff32433da0e44866";
+                const segundo = await fetch("https://api.openweathermap.org/data/2.5/weather?q=" + ciudad + ",cl&units=metric&appid=" + key + "&lang=es");
+                const tiempo = await segundo.json();
+                console.log(tiempo);
+                respuesta.classList.remove("d-none");
+                respuesta.classList.add("display-5","text-white");
+                document.body.removeAttribute("class");
+                navegador.classList.remove("bg-body-tertiary","navbar-light");
+                navegador.classList.add("navbar-dark");
+                lugar.innerHTML = tiempo.name;
+                temperatura.innerHTML = Math.round(tiempo.main.temp) + "ºC";
+                if (tiempo.coord.lat >= -26) {
+                    document.body.style.background = "linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0, 0.9)), url('nortegrandechile.webp')";
+                    document.body.style.backgroundPosition = "0 0";
+                    document.body.style.backgroundSize = "auto 150%";
+                } else if (tiempo.coord.lat < -26 && tiempo.coord.lat >= -33) {
+                    document.body.style.background = "linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0, 0.9)), url('nortechicochile.webp')";
+                    document.body.style.backgroundPosition = "0 0";
+                    document.body.style.backgroundSize = "auto 150%";
+                } else if (tiempo.coord.lat < -33 && tiempo.coord.lat >= -37) {
+                    document.body.style.background = "linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0, 0.9)), url('zonacentralchile.webp')";
+                    document.body.style.backgroundPosition = "0 0";
+                    document.body.style.backgroundSize = "auto 150%";
+                } else if (tiempo.coord.lat < -37 && tiempo.coord.lat >= -43) {
+                    document.body.style.background = "linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0, 0.9)), url('zonasurchile.webp')";
+                    document.body.style.backgroundPosition = "0 0";
+                    document.body.style.backgroundSize = "auto 150%";                   
+                } else {
+                    document.body.style.background = "linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0, 0.9)), url('zonaaustralchile.webp')";
+                    document.body.style.backgroundPosition = "0 0";
+                    document.body.style.backgroundSize = "auto 150%";
+                }
+            }
+            function consulta() {
+                let valor = input.value;
+                console.log(valor);
+                if (valor !== "" && listaCiudades.includes(valor)) {
+                    input.style.background = "#fff";
+                    weather(valor).catch((error) => console.error(error));
+                } else {
+                    input.style.background = "#ffa";
+                }
+            }
+        </script>
+    </body>
+</html>
